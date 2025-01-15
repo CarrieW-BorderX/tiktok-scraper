@@ -88,7 +88,7 @@ services:
 
 ```bash
 # Start Cobalt API
-docker-compose up -d
+docker compose up -d
 
 # Verify installation
 curl http://localhost:9000/api/serverInfo
