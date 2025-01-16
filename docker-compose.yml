@@ -1,0 +1,40 @@
+services:
+    cobalt-api:
+        image: ghcr.io/imputnet/cobalt:10  # Pull the latest Cobalt API image
+        init: true
+        read_only: true
+        restart: unless-stopped
+        container_name: cobalt-api
+
+        ports:
+            - 9000:9000/tcp  # Expose port 9000 to access the API locally
+            # Uncomment the next line and remove the one above if using a reverse proxy like Nginx
+            # - 127.0.0.1:9000:9000
+
+        environment:
+            API_URL: "http://localhost:9000/"
+            DURATION_LIMIT: "43200"
+            NVIDIA_VISIBLE_DEVICES: "all"  # Use all GPUs
+            NVIDIA_DRIVER_CAPABILITIES: "compute,utility"
+        deploy:
+            resources:
+                reservations:
+                    devices:
+                        - driver: nvidia
+                          count: all
+                          capabilities: [compute, utility]
+        runtime: nvidia  # Enable NVIDIA runtime for GPU support
+        labels:
+            - com.centurylinklabs.watchtower.scope=cobalt
+
+        # Uncomment only if you use the COOKIE_PATH variable
+        # volumes:
+            # - ./cookies.json:/cookies.json
+
+    # Watchtower for automatic updates of the Cobalt image
+    watchtower:
+        image: ghcr.io/containrrr/watchtower  # Pull Watchtower for automated updates
+        restart: unless-stopped
+        command: --cleanup --scope cobalt --interval 900 --include-restarting
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock  # Required for Watchtower to manage containers

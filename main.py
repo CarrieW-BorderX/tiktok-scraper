@@ -72,7 +72,7 @@ if __name__ == "__main__":
     search_type = get_search_type()
     search_folder = input(f"Enter source file to read: ").strip()
     # max videos to be scrapped
-    max_videos = 400
+    max_videos = 4000
 
     # Clear the errors.txt file
     with open("errors.txt", "w") as f:
