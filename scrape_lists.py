@@ -41,7 +41,6 @@ def random_delay(min_delay=1, max_delay=5):
         None
     """
     delay = random.uniform(min_delay, max_delay)
-    print(f"Sleeping for {round(delay, 2)} seconds...")
     time.sleep(delay)
 
 
@@ -80,18 +79,18 @@ def scrape_tiktok_user_videos(user, search_type="username", max_videos=2000, bat
     retry_count = 0
 
     try:
-        while len(video_urls) < max_videos:
+        scroll_height = driver.execute_script("return document.body.scrollHeight")
+        current_scroll_position = 0
+
+        # Scroll and detect the bottom
+        while current_scroll_position < scroll_height:
+            current_scroll_position += random.randint(300, 800)  # Mimic a human scroll
+            driver.execute_script(f"window.scrollTo(0, {current_scroll_position});")
+            print(f"Scrolled to {current_scroll_position}px with max {scroll_height}.")
+            random_delay(1, 3)
             scroll_height = driver.execute_script("return document.body.scrollHeight")
-            current_scroll_position = 0
 
-            # Scroll and detect the bottom
-            while current_scroll_position < scroll_height:
-                current_scroll_position += random.randint(300, 800)  # Mimic a human scroll
-                driver.execute_script(f"window.scrollTo(0, {current_scroll_position});")
-                print(f"Scrolled to {current_scroll_position}px.")
-                random_delay(1, 3)
-                scroll_height = driver.execute_script("return document.body.scrollHeight")
-
+        while len(video_urls) < max_videos:
             # Check for new videos
             videos = driver.find_elements(By.XPATH, '//a[contains(@href, "/video/")]')
             for video in videos:
@@ -107,7 +106,7 @@ def scrape_tiktok_user_videos(user, search_type="username", max_videos=2000, bat
                 if retry_count > max_retries:
                     print("Maximum retries reached. Stopping...")
                     break
-                print(f"No new videos found. Waiting for {retry_delay} seconds before retrying...")
+                print(f"No new videos found. Waiting for {retry_delay} seconds before retrying {retry_count}/{max_retries}...")
                 random_delay(retry_delay, retry_delay + 3)
                 driver.refresh()
                 print("Page refreshed. Continuing scraping...")
