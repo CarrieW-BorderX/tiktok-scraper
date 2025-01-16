@@ -100,9 +100,8 @@ curl http://localhost:9000/api/serverInfo
 
 ```bash
 python main.py
-# Choose: 1) Scrape by hashtag
-# Enter hashtag (without #): dance
-# Enter max videos: 100
+# Choose: 2 for account scrapper
+# enter source csv file ( row[0] is subfolder name, the keyword to group users. row[1] is user id for search)
 ```
 
 ### Scraping by User Profile/ID
