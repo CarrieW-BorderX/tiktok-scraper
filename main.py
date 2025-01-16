@@ -78,9 +78,13 @@ if __name__ == "__main__":
     with open("errors.txt", "w") as f:
         f.write("")
 
-    # Read the CSV file
+    # Read the CSV file for accounts
     # Row 0 should be keyword, the property some accounts shared. While be the subfolder name of videos
     # Row 1 should be account id, user id of tiktok. Do not contain @
+
+    # Read the CSV file for hashtag
+    # Row 0 should be subfolder name
+    # Row 1 should be hashtag
     with open(search_folder, "r") as f:
         reader = csv.reader(f)
         for row in reader:
