@@ -12,14 +12,15 @@ def get_search_type():
     Returns:
         str: The chosen search type ('hashtag', 'username', or 'userid').
     """
-    print("\nChoose the type of search:")
-    print("1. Hashtag")
-    print("2. User ID")
-    choice = input("Enter your choice (1/2): ").strip()
+    # print("\nChoose the type of search:")
+    # print("1. Hashtag")
+    # print("2. User ID")
+    choice = "2"
 
     if choice == "1":
         return "hashtag"
     elif choice == "2":
+        print("Defaulting to 'userid'.")
         return "userid"
     else:
         print("Invalid choice! Defaulting to 'hashtag'.")
@@ -63,16 +64,19 @@ def process_input_account(dst_folder,account,search_type,max_videos=500):
     print(f"Downloading videos to: {video_folder}")
 
     # Process videos
-    rate_limit_delay = 10  # Delay in seconds to handle rate limits
-    process_videos(output_file, video_folder, rate_limit_delay)
+    rate_limit_delay = 13  # Delay in seconds to handle rate limits
+    video_count = process_videos(output_file, video_folder, rate_limit_delay)
 
+    with open("summary.txt", "a") as f:
+        f.write(f"{account},{dst_folder}, {video_count}\n")
+    
     
 
 if __name__ == "__main__":
     search_type = get_search_type()
     search_folder = input(f"Enter source file to read: ").strip()
     # max videos to be scrapped
-    max_videos = 4000
+    max_videos = 50
 
     # Clear the errors.txt file
     with open("errors.txt", "w") as f:

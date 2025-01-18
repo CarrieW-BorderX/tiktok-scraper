@@ -2,7 +2,7 @@ import json
 import os
 import requests
 import time
-
+from multiprocessing import Pool
 
 def fetch_tunnel_url(video_url, api_url="http://localhost:9000/"):
     """
@@ -52,8 +52,10 @@ def download_video_from_tunnel(tunnel_url, filename, output_dir):
             for chunk in response.iter_content(chunk_size=1024):
                 f.write(chunk)
         print(f"Downloaded: {filename} -> {output_path}")
+        return True
     else:
         print(f"Failed to download from tunnel URL: {tunnel_url}. Response: {response.text}")
+        return False
 
 
 def process_videos(json_file, output_dir, rate_limit_delay=5):
@@ -68,13 +70,14 @@ def process_videos(json_file, output_dir, rate_limit_delay=5):
     Returns:
         None
     """
+    video_count = 0
     os.makedirs(output_dir, exist_ok=True)
 
     with open(json_file, "r") as f:
         video_urls = json.load(f)
 
-    for video_url in video_urls:
-        print(f"Processing: {video_url}")
+    for index, video_url in enumerate(video_urls):
+        print(f"Processing {index+1}: {video_url}")
 
         # Retry logic for rate limits
         while True:
@@ -88,4 +91,6 @@ def process_videos(json_file, output_dir, rate_limit_delay=5):
             break  # Success, proceed to download
 
         if result and "url" in result and "filename" in result:
-            download_video_from_tunnel(result["url"], result["filename"], output_dir)
+            if download_video_from_tunnel(result["url"], result["filename"], output_dir):
+                video_count+=1
+    return video_count
